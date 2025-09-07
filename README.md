@@ -7,12 +7,6 @@ An interactive solar system animation built to demonstrate GitHub Copilot's code
 ## Live Demo
 🚀 [https://tkapin.github.io/solar-system-demo](https://tkapin.github.io/solar-system-demo)
 
-## Features
-- Animated solar system with all 8 planets
-- Realistic orbital speeds based on astronomical data
-- Smooth CSS and JavaScript animations
-- Responsive design that works across devices
-
 ## Getting Started
 1. Open `index.html` in your browser to view the application
 2. Watch the planets orbit around the sun in real-time
