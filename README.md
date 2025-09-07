@@ -5,7 +5,7 @@
 Demo of AI generated code demonstrating our solar system
 
 ## Live Demo
-🚀 **[View the live demo here](https://tkapin.github.io/solar-system-demo)**
+🚀 [https://tkapin.github.io/solar-system-demo](https://tkapin.github.io/solar-system-demo)
 
 ## Getting Started
 1. Open `index.html` in your browser to view the application
