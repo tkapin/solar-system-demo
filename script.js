@@ -63,27 +63,12 @@ class Star extends CelestialBody {
  * Planet class represents planets that orbit around a central body
  */
 class Planet extends CelestialBody {
-  constructor(name, size, color, element, orbitalSpeed, orbitRadius) {
+  constructor(name, size, color, element, orbitalSpeed, orbitRadius, speedMultiplier) {
     super(name, size, color, element);
     this.orbitalSpeed = orbitalSpeed;
     this.orbitRadius = orbitRadius;
+    this.speedMultiplier = speedMultiplier;
     this.angle = Math.random() * 360; // Random starting position
-    this.speedMultiplier = this.calculateSpeedMultiplier();
-  }
-
-  /**
-   * Calculate speed multiplier for outer planets to make them more visible
-   */
-  calculateSpeedMultiplier() {
-    let multiplier = 0.1; // Base multiplier
-    
-    // Add extra boost for outer planets
-    if (this.name === 'jupiter') multiplier = 0.3;
-    if (this.name === 'saturn') multiplier = 0.5;
-    if (this.name === 'uranus') multiplier = 0.7;
-    if (this.name === 'neptune') multiplier = 0.9;
-    
-    return multiplier;
   }
 
   /**
@@ -122,28 +107,28 @@ document.addEventListener('DOMContentLoaded', function() {
     sun,
     new Planet('mercury', 10, '#bdc3c7', 
       document.querySelector('.mercury'), 4.1, 
-      parseInt(getComputedStyle(document.querySelector('.mercury-orbit')).width) / 2),
+      parseInt(getComputedStyle(document.querySelector('.mercury-orbit')).width) / 2, 0.1),
     new Planet('venus', 15, '#e67e22', 
       document.querySelector('.venus'), 1.6,
-      parseInt(getComputedStyle(document.querySelector('.venus-orbit')).width) / 2),
+      parseInt(getComputedStyle(document.querySelector('.venus-orbit')).width) / 2, 0.1),
     new Planet('earth', 16, '#3498db', 
       document.querySelector('.earth'), 1,
-      parseInt(getComputedStyle(document.querySelector('.earth-orbit')).width) / 2),
+      parseInt(getComputedStyle(document.querySelector('.earth-orbit')).width) / 2, 0.1),
     new Planet('mars', 14, '#e74c3c', 
       document.querySelector('.mars'), 0.53,
-      parseInt(getComputedStyle(document.querySelector('.mars-orbit')).width) / 2),
+      parseInt(getComputedStyle(document.querySelector('.mars-orbit')).width) / 2, 0.1),
     new Planet('jupiter', 30, '#f39c12', 
       document.querySelector('.jupiter'), 0.084,
-      parseInt(getComputedStyle(document.querySelector('.jupiter-orbit')).width) / 2),
+      parseInt(getComputedStyle(document.querySelector('.jupiter-orbit')).width) / 2, 0.3),
     new Planet('saturn', 28, '#f1c40f', 
       document.querySelector('.saturn'), 0.034,
-      parseInt(getComputedStyle(document.querySelector('.saturn-orbit')).width) / 2),
+      parseInt(getComputedStyle(document.querySelector('.saturn-orbit')).width) / 2, 0.5),
     new Planet('uranus', 20, '#16a085', 
       document.querySelector('.uranus'), 0.012,
-      parseInt(getComputedStyle(document.querySelector('.uranus-orbit')).width) / 2),
+      parseInt(getComputedStyle(document.querySelector('.uranus-orbit')).width) / 2, 0.7),
     new Planet('neptune', 20, '#2980b9', 
       document.querySelector('.neptune'), 0.006,
-      parseInt(getComputedStyle(document.querySelector('.neptune-orbit')).width) / 2)
+      parseInt(getComputedStyle(document.querySelector('.neptune-orbit')).width) / 2, 0.9)
   ];
   
   // Create labels for all celestial bodies
