@@ -1,105 +1,165 @@
 // This file will contain JavaScript code for the Solar System Demo
 console.log("Solar System Demo loaded");
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Set orbital speeds for each planet (degrees per second)
-  const orbitalSpeeds = {
-    mercury: 4.1,
-    venus: 1.6,
-    earth: 1,
-    mars: 0.53,
-    jupiter: 0.084,
-    saturn: 0.034,
-    uranus: 0.012,
-    neptune: 0.006
-  };
-
-  // Initialize positions
-  const planets = {
-    mercury: document.querySelector('.mercury'),
-    venus: document.querySelector('.venus'),
-    earth: document.querySelector('.earth'),
-    mars: document.querySelector('.mars'),
-    jupiter: document.querySelector('.jupiter'),
-    saturn: document.querySelector('.saturn'),
-    uranus: document.querySelector('.uranus'),
-    neptune: document.querySelector('.neptune')
-  };
-
-  // Create labels for sun and planets
-  const solarSystem = document.querySelector('.solar-system');
-  
-  // Add Sun label
-  const sunLabel = document.createElement('div');
-  sunLabel.className = 'celestial-label sun-label';
-  sunLabel.textContent = 'Sun';
-  solarSystem.appendChild(sunLabel);
-  
-  // Create planet labels
-  const planetLabels = {};
-  for (const planet in planets) {
-    const label = document.createElement('div');
-    label.className = `celestial-label ${planet}-label`;
-    label.textContent = planet.charAt(0).toUpperCase() + planet.slice(1);
-    solarSystem.appendChild(label);
-    planetLabels[planet] = label;
+/**
+ * Base class for all celestial bodies in the solar system
+ */
+class CelestialBody {
+  constructor(name, size, color, element) {
+    this.name = name;
+    this.size = size;
+    this.color = color;
+    this.element = element;
+    this.label = null;
   }
-  
-  // Style the labels
-  const labels = document.querySelectorAll('.celestial-label');
-  labels.forEach(label => {
+
+  /**
+   * Create and position a label for this celestial body
+   */
+  createLabel(solarSystem) {
+    const label = document.createElement('div');
+    label.className = `celestial-label ${this.name.toLowerCase()}-label`;
+    label.textContent = this.name.charAt(0).toUpperCase() + this.name.slice(1);
     label.style.position = 'absolute';
     label.style.color = 'white';
     label.style.fontSize = '12px';
     label.style.fontFamily = 'Arial, sans-serif';
     label.style.textShadow = '0 0 2px black';
     label.style.pointerEvents = 'none';
-  });
-  
-  // Position sun label
-  sunLabel.style.left = '50%';
-  sunLabel.style.top = '50%';
-  sunLabel.style.transform = 'translate(-50%, -30px)';
+    
+    solarSystem.appendChild(label);
+    this.label = label;
+  }
 
-  // Initialize starting angles (random positions)
-  const angles = {
-    mercury: Math.random() * 360,
-    venus: Math.random() * 360,
-    earth: Math.random() * 360,
-    mars: Math.random() * 360,
-    jupiter: Math.random() * 360,
-    saturn: Math.random() * 360,
-    uranus: Math.random() * 360,
-    neptune: Math.random() * 360
-  };
+  /**
+   * Update the position of this celestial body (to be overridden by subclasses)
+   */
+  updatePosition() {
+    // Base implementation does nothing
+  }
+}
 
-  // Animation function
-  function animate() {
-    // Update position of each planet
-    for (const planet in planets) {
-      // Apply different speed multipliers based on planet type
-      let speedMultiplier = 0.1; // Base multiplier (5x original)
-      
-      // Add extra boost for outer planets
-      if (planet === 'jupiter') speedMultiplier = 0.3;
-      if (planet === 'saturn') speedMultiplier = 0.5;
-      if (planet === 'uranus') speedMultiplier = 0.7;
-      if (planet === 'neptune') speedMultiplier = 0.9;
-      
-      angles[planet] += orbitalSpeeds[planet] * speedMultiplier;
-      
-      // Position planets on their orbits
-      const radius = parseInt(getComputedStyle(document.querySelector(`.${planet}-orbit`)).width) / 2;
-      const x = Math.cos(angles[planet] * Math.PI / 180) * radius;
-      const y = Math.sin(angles[planet] * Math.PI / 180) * radius;
-      
-      planets[planet].style.transform = `translate(${x}px, ${y}px)`;
-      
-      // Position labels alongside planets (slightly offset)
-      const labelOffsetX = 10; // Offset in pixels
-      const labelOffsetY = -15;
-      planetLabels[planet].style.transform = `translate(${x + labelOffsetX}px, ${y + labelOffsetY}px)`;
+/**
+ * Star class represents stars like the Sun that don't orbit anything
+ */
+class Star extends CelestialBody {
+  constructor(name, size, color, element) {
+    super(name, size, color, element);
+  }
+
+  /**
+   * Position the star label at the center
+   */
+  updatePosition() {
+    if (this.label) {
+      this.label.style.left = '50%';
+      this.label.style.top = '50%';
+      this.label.style.transform = 'translate(-50%, -30px)';
     }
+  }
+}
+
+/**
+ * Planet class represents planets that orbit around a central body
+ */
+class Planet extends CelestialBody {
+  constructor(name, size, color, element, orbitalSpeed, orbitRadius) {
+    super(name, size, color, element);
+    this.orbitalSpeed = orbitalSpeed;
+    this.orbitRadius = orbitRadius;
+    this.angle = Math.random() * 360; // Random starting position
+    this.speedMultiplier = this.calculateSpeedMultiplier();
+  }
+
+  /**
+   * Calculate speed multiplier for outer planets to make them more visible
+   */
+  calculateSpeedMultiplier() {
+    let multiplier = 0.1; // Base multiplier
+    
+    // Add extra boost for outer planets
+    if (this.name === 'jupiter') multiplier = 0.3;
+    if (this.name === 'saturn') multiplier = 0.5;
+    if (this.name === 'uranus') multiplier = 0.7;
+    if (this.name === 'neptune') multiplier = 0.9;
+    
+    return multiplier;
+  }
+
+  /**
+   * Update the planet's position in its orbit
+   */
+  updatePosition() {
+    // Update angle based on orbital speed
+    this.angle += this.orbitalSpeed * this.speedMultiplier;
+    
+    // Calculate position on orbit
+    const x = Math.cos(this.angle * Math.PI / 180) * this.orbitRadius;
+    const y = Math.sin(this.angle * Math.PI / 180) * this.orbitRadius;
+    
+    // Update planet position
+    this.element.style.transform = `translate(${x}px, ${y}px)`;
+    
+    // Update label position with offset
+    if (this.label) {
+      const labelOffsetX = 10;
+      const labelOffsetY = -15;
+      this.label.style.transform = `translate(${x + labelOffsetX}px, ${y + labelOffsetY}px)`;
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const solarSystem = document.querySelector('.solar-system');
+  
+  // Create the Sun
+  const sun = new Star('sun', 60, '#ff9933', document.querySelector('.sun'));
+  sun.createLabel(solarSystem);
+  sun.updatePosition();
+  
+  // Create all planets with their properties
+  const celestialBodies = [
+    sun,
+    new Planet('mercury', 10, '#bdc3c7', 
+      document.querySelector('.mercury'), 4.1, 
+      parseInt(getComputedStyle(document.querySelector('.mercury-orbit')).width) / 2),
+    new Planet('venus', 15, '#e67e22', 
+      document.querySelector('.venus'), 1.6,
+      parseInt(getComputedStyle(document.querySelector('.venus-orbit')).width) / 2),
+    new Planet('earth', 16, '#3498db', 
+      document.querySelector('.earth'), 1,
+      parseInt(getComputedStyle(document.querySelector('.earth-orbit')).width) / 2),
+    new Planet('mars', 14, '#e74c3c', 
+      document.querySelector('.mars'), 0.53,
+      parseInt(getComputedStyle(document.querySelector('.mars-orbit')).width) / 2),
+    new Planet('jupiter', 30, '#f39c12', 
+      document.querySelector('.jupiter'), 0.084,
+      parseInt(getComputedStyle(document.querySelector('.jupiter-orbit')).width) / 2),
+    new Planet('saturn', 28, '#f1c40f', 
+      document.querySelector('.saturn'), 0.034,
+      parseInt(getComputedStyle(document.querySelector('.saturn-orbit')).width) / 2),
+    new Planet('uranus', 20, '#16a085', 
+      document.querySelector('.uranus'), 0.012,
+      parseInt(getComputedStyle(document.querySelector('.uranus-orbit')).width) / 2),
+    new Planet('neptune', 20, '#2980b9', 
+      document.querySelector('.neptune'), 0.006,
+      parseInt(getComputedStyle(document.querySelector('.neptune-orbit')).width) / 2)
+  ];
+  
+  // Create labels for all celestial bodies
+  celestialBodies.forEach(body => {
+    if (body instanceof Planet) {
+      body.createLabel(solarSystem);
+    }
+  });
+
+  
+  // Animation function using OOP approach
+  function animate() {
+    // Update position of each celestial body
+    celestialBodies.forEach(body => {
+      body.updatePosition();
+    });
     
     requestAnimationFrame(animate);
   }
